@@ -39,7 +39,7 @@ sed -e "s#!!PREFIX!!#$PREFIX#g" \
 
 docker-compose up -d  ||  fail "Failed to start containers"
 
-echo "*** Containers are up. ***"
+echo "*** Containers are up. See the docker-compose output above for the names ***"
 echo
 echo "Test the pool by exec'ing into the submit container, doing 'su - submituser', and submitting a job"
 echo "Test minicondor in the mini container the same way"
