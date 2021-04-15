@@ -6,3 +6,6 @@ and bring up the containers.
 
 You can specify a prefix (e.g. "htcondor/") and/or a tag (e.g. "9.0.0-el7")
 to runtest; see `runtest -help` for the defaults.
+
+
+NOTE: The contents of this repo will probably be merged into the htcondor source tree.
