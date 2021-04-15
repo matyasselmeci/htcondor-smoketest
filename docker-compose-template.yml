@@ -1,0 +1,42 @@
+version: '3'
+services:
+  cm:
+    image: "!!PREFIX!!cm:!!TAG!!"
+    ports: ["19618:9618"]
+    environment:
+      - CONDOR_HOST=cm
+      - USE_POOL_PASSWORD=yes
+    volumes:
+      - "./secrets:/etc/condor/passwords-orig.d:rw"
+    command: bash -c 'dd if=/dev/urandom of=/etc/condor/passwords-orig.d/POOL count=256; exec bash -x /start.sh'
+
+  submit:
+    image: "!!PREFIX!!submit:!!TAG!!"
+    ports: ["19617:9618"]
+    # ^ 19617 is the host port but the other containers in the compose still see 9618
+    environment:
+      - CONDOR_HOST=cm
+      - USE_POOL_PASSWORD=yes
+    volumes:
+      - "./secrets:/etc/condor/passwords-orig.d:rw"
+    depends_on:
+      - cm
+
+  execute:
+    image: "!!PREFIX!!execute:!!TAG!!"
+    # execute nodes don't need any ports exposed because they use CCB
+    environment:
+      - CONDOR_HOST=cm
+      - USE_POOL_PASSWORD=yes
+      - NUM_CPUS=2
+      - MEMORY=2048
+      - RESERVED_DISK=1024
+    volumes:
+      - "./secrets:/etc/condor/passwords-orig.d:rw"
+    depends_on:
+      - cm
+
+  mini:
+    image: "!!PREFIX!!mini:!!TAG!!"
+    # mini nodes are self-contained
+

@@ -1,0 +1,53 @@
+#!/bin/bash
+
+prog=${0##*/}
+progdir=$(dirname "$0")
+
+PREFIX=htcondor/
+TAG=el7
+
+fail () {
+    echo "$prog:" "$@" >&2
+    exit 1
+}
+
+usage () {
+    echo "Usage: $prog [[PREFIX] TAG]" >&2
+    echo "Default prefix: $PREFIX" >&2
+    echo "Default tag: $TAG" >&2
+    echo "prefix must include a '/'" >&2
+    exit $1
+}
+
+if [[ $1 == -h || $1 == --help || $1 == -help ]]; then
+    usage 0
+fi
+
+case $# in
+    0) true ;;
+    1) TAG=$1 ;;
+    2) PREFIX=$1 TAG=$2 ;;
+    *) usage 2 ;;
+esac
+
+set -o nounset
+
+mkdir -p secrets/  ||  fail "Couldn't create secrets dir"
+sed -e "s#!!PREFIX!!#$PREFIX#g" \
+    -e "s#!!TAG!!#$TAG#g" \
+    docker-compose-template.yml > docker-compose.yml  ||  fail "Couldn't create docker-compose.yml from template"
+
+docker-compose up -d  ||  fail "Failed to start containers"
+
+echo "*** Containers are up. ***"
+echo
+echo "Test the pool by exec'ing into the submit container, doing 'su - submituser', and submitting a job"
+echo "Test minicondor in the mini container the same way"
+echo "Test the restd in the mini container by exec'ing into the mini container and doing"
+echo "    curl -L localhost:8080/v1/jobs/DEFAULT | jq ."
+echo "    curl -L localhost:8080/v1/history/DEFAULT | jq ."
+echo "(one of those should give you the job you just ran)"
+echo
+echo "Run 'docker-compose down' to take down the containers"
+
+# vim:et:sw=4:sts=4:ts=8
