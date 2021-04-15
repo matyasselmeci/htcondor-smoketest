@@ -1,0 +1,8 @@
+This is a simple smoke test of the htcondor containers using docker-compose
+to set up a 3-node pool (using PASSWORD auth) and a mini container.
+
+Run `runtest` to create a docker-compose file from a template,
+and bring up the containers.
+
+You can specify a prefix (e.g. "htcondor/") and/or a tag (e.g. "9.0.0-el7")
+to runtest; see `runtest -help` for the defaults.
